@@ -1,0 +1,23 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Spring Boot
+spring-boot-starter.log
