@@ -13,20 +13,6 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * A delivery address belonging to one user.
- *
- * <p><b>Why {@code userId} is a plain UUID and not {@code @ManyToOne User}:</b>
- * we never need to navigate from an address to the user's profile fields. Keeping
- * it as a raw id avoids lazy-loading surprises (we run with
- * {@code open-in-view=false}), keeps the ownership check a trivial UUID compare,
- * and means loading a user's addresses does not drag the user row along with it.
- * The referential integrity we want is still there - it lives in the
- * {@code fk_addresses_user} foreign key.
- *
- * <p>Unlike {@link User}, the id IS generated here: an address is created by this
- * service, so this service owns its identifier.
- */
 @Entity
 @Table(name = "addresses")
 public class Address {
@@ -57,11 +43,6 @@ public class Address {
     @Column(name = "pincode", nullable = false, length = 20)
     private String pincode;
 
-    /**
-     * At most one address per user may have this set. Enforced by the partial
-     * unique index {@code uq_addresses_one_default_per_user}, so the invariant
-     * survives concurrent requests, not just well-behaved ones.
-     */
     @Column(name = "is_default", nullable = false)
     private boolean isDefault;
 
@@ -73,7 +54,6 @@ public class Address {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    /** Required by JPA. Not for application use. */
     protected Address() {
     }
 
@@ -81,7 +61,6 @@ public class Address {
         this.userId = userId;
     }
 
-    /** True when this address belongs to the given user. The ownership check. */
     public boolean belongsTo(UUID candidateUserId) {
         return Objects.equals(this.userId, candidateUserId);
     }
@@ -158,12 +137,6 @@ public class Address {
         return updatedAt;
     }
 
-    /**
-     * Only equal when both sides have been persisted and share an id. A transient
-     * address (id == null) is equal only to itself - the standard JPA-safe
-     * contract, which stops two unsaved addresses from collapsing into one inside
-     * a {@code Set}.
-     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {
