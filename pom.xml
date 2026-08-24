@@ -5,11 +5,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!--
-      Spring Boot parent gives us dependency management (the "BOM"): we declare
-      dependencies WITHOUT versions and Boot picks versions guaranteed to work
-      together. 3.5.16 is already present in the local ~/.m2 cache.
-    -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -26,18 +21,9 @@
     <properties>
         <java.version>21</java.version>
         <springdoc.version>2.8.17</springdoc.version>
-        <!--
-          Spring Cloud 2025.0.x is the release train that targets Spring Boot 3.5.x.
-          Do not bump this independently of the Boot version in <parent> - the train
-          and the Boot line are released as a matched pair.
-        -->
         <spring-cloud.version>2025.0.3</spring-cloud.version>
     </properties>
 
-    <!--
-      The Spring Cloud BOM, imported alongside Boot's own. It is what lets the
-      OpenFeign starter below be declared without a version.
-    -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -52,97 +38,65 @@
 
     <dependencies>
 
-        <!-- ===== Web layer: @RestController, embedded Tomcat, Jackson ===== -->
+        <!-- Web layer -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- ===== Persistence: Hibernate + Spring Data JPA repositories ===== -->
+        <!-- Persistence -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- ===== Bean Validation: @NotBlank, @Email, @Size, @Pattern ===== -->
+        <!-- Bean Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!--
-          ===== Security: STRUCTURE ONLY =====
-          User Service does NOT authenticate. Auth Service owns login/JWT/passwords.
-          This starter only gives us the filter chain we need in order to (a) enforce
-          that a caller identity is present and (b) reject cross-user access. The JWT
-          decoding itself happens at the API Gateway.
-        -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
-        <!-- ===== Health endpoint the API Gateway can probe ===== -->
+        <!-- Health endpoint -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- ===== PostgreSQL JDBC driver (runtime only) ===== -->
+        <!-- PostgreSQL -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!--
-          ===== Flyway: versioned schema migrations =====
-          flyway-database-postgresql is MANDATORY from Flyway 10 onwards; the
-          Postgres dialect was split out of flyway-core into its own artifact.
-        -->
+        <!-- Flyway -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 
-        <!--
-          ===== OpenFeign: typed HTTP clients for the two services we call =====
-
-          AuthServiceClient      resolves a bearer token into an identity
-          MerchantServiceClient  pushes merchantId + businessName on onboarding
-
-          Declarative clients rather than RestClient by hand: the request/response
-          shape becomes a Java interface, which is the contract we agree with the
-          other two developers, and it is trivial to mock in tests.
-
-          No service discovery is involved - each client is pinned to an absolute
-          URL from configuration, so there is no Eureka/Consul dependency.
-        -->
+        <!-- OpenFeign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
-        <!-- ===== Swagger / OpenAPI 3 UI at /swagger-ui.html ===== -->
+        <!-- Swagger / OpenAPI -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
 
-        <!-- ===== Testing: JUnit 5 + Mockito + AssertJ + MockMvc ===== -->
+        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -150,18 +104,12 @@
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!--
-              Tests tagged @Tag("integration") need a real PostgreSQL, so `mvn test`
-              skips them and runs only the unit and MockMvc slice tests - meaning the
-              default build needs no database at all. Run the integration tests with
-              the profile below:
-                  mvn test -P integration-tests
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -169,16 +117,12 @@
                     <excludedGroups>integration</excludedGroups>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
     <profiles>
-        <!--
-          `mvn test -P integration-tests` runs ONLY the @Tag("integration") tests, against
-          the real PostgreSQL database named by src/test/resources/application-test.yml.
-          The exclusion above has to be cleared here as well, otherwise it would cancel
-          out the inclusion and silently run nothing.
-        -->
+
         <profile>
             <id>integration-tests</id>
             <build>
@@ -194,6 +138,7 @@
                 </plugins>
             </build>
         </profile>
+
     </profiles>
 
 </project>

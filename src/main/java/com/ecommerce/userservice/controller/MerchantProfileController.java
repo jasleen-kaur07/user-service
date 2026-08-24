@@ -4,7 +4,6 @@ import com.ecommerce.userservice.dto.CreateMerchantProfileRequest;
 import com.ecommerce.userservice.dto.ErrorResponse;
 import com.ecommerce.userservice.dto.MerchantProfileResponse;
 import com.ecommerce.userservice.dto.UpdateMerchantProfileRequest;
-import com.ecommerce.userservice.security.CurrentUser;
 import com.ecommerce.userservice.service.MerchantProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,40 +26,34 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users/{userId}/merchant-profile")
 @Tag(name = "Merchant onboarding",
-     description = "A merchant user creating and editing their own basic identity. This is where a merchantId is minted.")
+        description = "A merchant user creating and editing their own basic identity. This is where a merchantId is minted.")
 public class MerchantProfileController {
 
     private final MerchantProfileService merchantProfileService;
-    private final CurrentUser currentUser;
 
-    public MerchantProfileController(MerchantProfileService merchantProfileService, CurrentUser currentUser) {
+    public MerchantProfileController(MerchantProfileService merchantProfileService) {
         this.merchantProfileService = merchantProfileService;
-        this.currentUser = currentUser;
     }
 
     @PostMapping
     @Operation(
             summary = "Create your merchant profile (mints the merchantId)",
             description = """
-                    Creates the caller's basic merchant identity and returns the newly minted
-                    **merchantId**. Merchant Service then keys its stock, pricing and offers on
+                    Creates the user's basic merchant identity and returns the newly minted
+                    merchantId. Merchant Service then keys its stock, pricing and offers on
                     that id.
 
                     Two business rules:
-                    * only a user whose `userType` is MERCHANT may have a profile - a CUSTOMER gets
-                      409 NOT_A_MERCHANT. The user type comes from Auth Service and cannot be
-                      changed through the profile API, so a customer cannot self-promote to pass
-                      this check;
+                    * only a user whose userType is MERCHANT may have a profile - a CUSTOMER gets
+                      409 NOT_A_MERCHANT;
                     * one profile per user - a second attempt gets 409
                       MERCHANT_PROFILE_ALREADY_EXISTS.
 
-                    Only `businessName` is required. Nothing about products, stock, price or rating
+                    Only businessName is required. Nothing about products, stock, price or rating
                     is accepted here; that data belongs to Merchant Service.""")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Profile created; response carries the merchantId"),
             @ApiResponse(responseCode = "400", description = "VALIDATION_ERROR - businessName missing, or bad email/phone",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "403", description = "Caller is a different user",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "404", description = "USER_NOT_FOUND",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -71,8 +64,9 @@ public class MerchantProfileController {
             @PathVariable UUID userId,
             @Valid @RequestBody CreateMerchantProfileRequest request) {
 
-        currentUser.requireSelf(userId);
-        MerchantProfileResponse created = merchantProfileService.createMerchantProfile(userId, request);
+        MerchantProfileResponse created =
+                merchantProfileService.createMerchantProfile(userId, request);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
@@ -89,8 +83,6 @@ public class MerchantProfileController {
             @ApiResponse(responseCode = "200", description = "Profile updated"),
             @ApiResponse(responseCode = "400", description = "VALIDATION_ERROR - empty body, or bad email/phone",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "403", description = "Caller is a different user",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "404", description = "MERCHANT_PROFILE_NOT_FOUND",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
@@ -98,7 +90,8 @@ public class MerchantProfileController {
             @PathVariable UUID userId,
             @Valid @RequestBody UpdateMerchantProfileRequest request) {
 
-        currentUser.requireSelf(userId);
-        return ResponseEntity.ok(merchantProfileService.updateMerchantProfile(userId, request));
+        return ResponseEntity.ok(
+                merchantProfileService.updateMerchantProfile(userId, request)
+        );
     }
 }
