@@ -5,17 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-/**
- * Payload for creating a merchant profile, i.e. for minting a merchantId.
- *
- * <p>Only {@code businessName} is mandatory: it is the name shown next to the
- * offer on the product page ("EasyBuy", "Telesoft"). Business email and phone are
- * optional contact details, validated only when present.
- *
- * <p>There is no field here for stock, price, rating or product count. Those live
- * in Merchant Service, which will look this merchantId up over REST and attach its
- * own commerce data to it.
- */
 public record CreateMerchantProfileRequest(
 
         @NotBlank(message = "businessName is required")

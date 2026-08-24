@@ -18,7 +18,6 @@ public record UpdateUserRequest(
         String phone
 ) {
 
-
     @AssertTrue(message = "at least one of firstName, lastName or phone must be provided")
     public boolean hasAtLeastOneField() {
         return firstName != null || lastName != null || phone != null;

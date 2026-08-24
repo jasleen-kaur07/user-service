@@ -15,7 +15,6 @@ public record ErrorResponse(
         List<FieldError> fieldErrors
 ) {
 
-    /** One rejected field, for Bean Validation failures. */
     public record FieldError(String field, String message) {
     }
 
