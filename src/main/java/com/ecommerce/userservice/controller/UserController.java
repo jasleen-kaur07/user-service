@@ -3,6 +3,7 @@ package com.ecommerce.userservice.controller;
 import com.ecommerce.userservice.dto.ErrorResponse;
 import com.ecommerce.userservice.dto.UpdateUserRequest;
 import com.ecommerce.userservice.dto.UserResponse;
+import com.ecommerce.userservice.dto.CreateUserRequest;
 import com.ecommerce.userservice.security.CurrentUser;
 import com.ecommerce.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,10 +17,13 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
 
 import java.util.UUID;
 
@@ -90,4 +94,18 @@ public class UserController {
         currentUser.requireSelf(userId);
         return ResponseEntity.ok(userService.updateUser(userId, request));
     }
+
+    @PostMapping("/internal/sync")
+    public ResponseEntity<UserResponse> syncUser(
+            @Valid @RequestBody CreateUserRequest request) {
+
+        UserService.SyncResult result =
+                userService.syncUserFromAuthService(request);
+
+        return result.created()
+                ? ResponseEntity.status(201).body(result.user())
+                : ResponseEntity.ok(result.user());
+    }
+
+
 }
