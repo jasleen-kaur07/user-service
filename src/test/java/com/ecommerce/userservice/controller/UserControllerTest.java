@@ -3,6 +3,7 @@ package com.ecommerce.userservice.controller;
 import com.ecommerce.userservice.dto.UserResponse;
 import com.ecommerce.userservice.entity.UserType;
 import com.ecommerce.userservice.exception.ResourceNotFoundException;
+import com.ecommerce.userservice.service.AddressService;
 import com.ecommerce.userservice.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,9 @@ class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private AddressService addressService;
 
     private static UserResponse profile() {
         return new UserResponse(

@@ -1,9 +1,12 @@
 package com.ecommerce.userservice.controller;
 
+import com.ecommerce.userservice.dto.AddressResponse;
 import com.ecommerce.userservice.dto.CreateUserRequest;
 import com.ecommerce.userservice.dto.ErrorResponse;
+import com.ecommerce.userservice.dto.OrderUserDetailsResponse;
 import com.ecommerce.userservice.dto.UpdateUserRequest;
 import com.ecommerce.userservice.dto.UserResponse;
+import com.ecommerce.userservice.service.AddressService;
 import com.ecommerce.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,9 +34,11 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final AddressService addressService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AddressService addressService) {
         this.userService = userService;
+        this.addressService = addressService;
     }
 
     @GetMapping("/{userId}")
@@ -41,9 +47,7 @@ public class UserController {
             description = """
                     Returns the profile for the given user.
 
-                    Order Service calls this at checkout to obtain the customer's email for the
-                    confirmation mail. Cart Service calls it only if it needs more than the userId
-                    it already holds from the JWT.""")
+                    Order Service can use this endpoint to obtain the customer's email.""")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Profile found"),
             @ApiResponse(responseCode = "404", description = "USER_NOT_FOUND",
@@ -54,6 +58,48 @@ public class UserController {
             @PathVariable UUID userId) {
 
         return ResponseEntity.ok(userService.getUser(userId));
+    }
+
+    @GetMapping("/{userId}/order-details")
+    @Operation(
+            summary = "Get user details required for an order",
+            description = """
+                    Returns the user's identity information and delivery address required
+                    by Order Service during checkout.
+
+                    Order Service calls this endpoint using the userId received from
+                    Cart Service.
+
+                    The response contains:
+                    * userId
+                    * email
+                    * the user's default address, or the first available address if no
+                      default address exists.""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User order details found"),
+            @ApiResponse(responseCode = "404", description = "USER_NOT_FOUND",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<OrderUserDetailsResponse> getOrderUserDetails(
+            @Parameter(description = "The user's UUID")
+            @PathVariable UUID userId) {
+
+        UserResponse user = userService.getUser(userId);
+
+        List<AddressResponse> addresses = addressService.getAddresses(userId);
+
+        AddressResponse address = addresses.stream()
+                .filter(AddressResponse::isDefault)
+                .findFirst()
+                .orElse(addresses.isEmpty() ? null : addresses.get(0));
+
+        return ResponseEntity.ok(
+                new OrderUserDetailsResponse(
+                        user.id(),
+                        user.email(),
+                        address
+                )
+        );
     }
 
     @PatchMapping("/{userId}")
