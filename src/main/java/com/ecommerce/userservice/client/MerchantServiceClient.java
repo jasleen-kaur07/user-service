@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface MerchantServiceClient {
 
-    @PostMapping("/api/internal/merchants")
+    @PostMapping("/api/merchants/internal")
     void syncMerchantIdentity(@RequestBody MerchantIdentitySyncRequest request);
 }

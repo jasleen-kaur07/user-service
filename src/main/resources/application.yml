@@ -38,6 +38,7 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
+
   cloud:
     openfeign:
       client:
@@ -47,21 +48,13 @@ spring:
             readTimeout: 3000
             loggerLevel: basic
 
-
 integration:
   auth-service:
     url: ${AUTH_SERVICE_URL:http://localhost:8081}
-  merchant-service:
-    url: ${MERCHANT_SERVICE_URL:http://localhost:8084}
-    enabled: ${MERCHANT_SYNC_ENABLED:true}
 
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-    operations-sorter: method
-    tags-sorter: alpha
+  merchant-service:
+    url: ${MERCHANT_SERVICE_URL:http://10.17.48.70:4001}
+    enabled: ${MERCHANT_SYNC_ENABLED:true}
 
 management:
   endpoints:
@@ -71,6 +64,14 @@ management:
   endpoint:
     health:
       show-details: never
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
 
 logging:
   level:

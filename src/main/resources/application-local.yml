@@ -12,4 +12,4 @@ logging:
 
 integration:
   merchant-service:
-    enabled: ${MERCHANT_SYNC_ENABLED:false}
+    enabled: ${MERCHANT_SYNC_ENABLED:true}

@@ -32,7 +32,8 @@ public class MerchantServiceNotifier {
         }
 
         var request = new MerchantIdentitySyncRequest(
-                event.merchantId(), event.userId(), event.businessName());
+                event.businessName()
+        );
 
         try {
             merchantServiceClient.syncMerchantIdentity(request);
