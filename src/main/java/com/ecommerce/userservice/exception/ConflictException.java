@@ -16,7 +16,7 @@ public class ConflictException extends ApiException {
     public static ConflictException identityMismatch(UUID userId) {
         return new ConflictException(ErrorCode.USER_IDENTITY_MISMATCH,
                 "A user with id " + userId + " already exists with different identity details. "
-                        + "Auth Service must not change a user's email or userType through the sync endpoint.");
+                        + "Auth Service must not change a user's email or role through the sync endpoint.");
     }
 
     public static ConflictException merchantProfileExists(UUID userId) {

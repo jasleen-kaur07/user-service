@@ -9,10 +9,10 @@ public record TokenIntrospectionResponse(
         boolean active,
         UUID userId,
         String email,
-        UserType userType
+        UserType role
 ) {
 
     public boolean isUsable() {
-        return active && userId != null && userType != null;
+        return active && userId != null && role != null;
     }
 }

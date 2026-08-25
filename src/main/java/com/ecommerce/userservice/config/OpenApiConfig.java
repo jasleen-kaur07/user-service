@@ -27,7 +27,7 @@ public class OpenApiConfig {
                                 Ecommerce Platform.
 
                                 ### What this service owns
-                                * the user profile - email, name, phone, userType (CUSTOMER or MERCHANT)
+                                * the user profile - email, name, phone, role (CUSTOMER or MERCHANT)
                                 * customer addresses, including the single-default-address rule
                                 * basic merchant identity - the merchantId shared with Merchant Service
                                   and Order Service

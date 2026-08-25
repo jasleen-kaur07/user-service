@@ -55,7 +55,7 @@ class UserServiceTest {
 
             assertThat(result.created()).isTrue();
             assertThat(result.user().id()).isEqualTo(USER_ID);
-            assertThat(result.user().userType()).isEqualTo(UserType.CUSTOMER);
+            assertThat(result.user().role()).isEqualTo(UserType.CUSTOMER);
 
             // The email must be stored lower-cased, or 'A@x.com' and 'a@x.com' become
             // two accounts despite the unique index.
@@ -81,7 +81,7 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("rejects a payload that contradicts the stored userType rather than overwriting it")
+        @DisplayName("rejects a payload that contradicts the stored role rather than overwriting it")
         void rejectsUserTypeChange() {
             var existing = new User(USER_ID, "jasleen@gmail.com", UserType.CUSTOMER);
             when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existing));
@@ -189,7 +189,7 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("cannot change email or userType - the update never touches them")
+        @DisplayName("cannot change email or role - the update never touches them")
         void doesNotTouchIdentityFields() {
             var user = new User(USER_ID, "jasleen@gmail.com", UserType.CUSTOMER);
             when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
@@ -198,7 +198,7 @@ class UserServiceTest {
             userService.updateUser(USER_ID, new UpdateUserRequest("Jasleen", "Kaur", null));
 
             assertThat(user.getEmail()).isEqualTo("jasleen@gmail.com");
-            assertThat(user.getUserType()).isEqualTo(UserType.CUSTOMER);
+            assertThat(user.getRole()).isEqualTo(UserType.CUSTOMER);
         }
 
         @Test

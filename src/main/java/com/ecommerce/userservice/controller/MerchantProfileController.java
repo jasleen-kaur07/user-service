@@ -44,7 +44,7 @@ public class MerchantProfileController {
                     that id.
 
                     Two business rules:
-                    * only a user whose userType is MERCHANT may have a profile - a CUSTOMER gets
+                    * only a user whose role is MERCHANT may have a profile - a CUSTOMER gets
                       409 NOT_A_MERCHANT;
                     * one profile per user - a second attempt gets 409
                       MERCHANT_PROFILE_ALREADY_EXISTS.

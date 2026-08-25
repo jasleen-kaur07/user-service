@@ -11,7 +11,7 @@ public record UserResponse(
         String firstName,
         String lastName,
         String phone,
-        UserType userType,
+        UserType role,
         Instant createdAt,
         Instant updatedAt
 ) {

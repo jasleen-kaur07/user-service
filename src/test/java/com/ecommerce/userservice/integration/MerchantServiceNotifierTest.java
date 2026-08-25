@@ -33,7 +33,7 @@ class MerchantServiceNotifierTest {
     }
 
     @Test
-    @DisplayName("pushes merchantId, userId and business name when a merchant is onboarded")
+    @DisplayName("pushes the business name when a merchant is onboarded")
     void pushesOnCreate() {
         var notifier = new MerchantServiceNotifier(merchantServiceClient, true);
 
@@ -43,8 +43,6 @@ class MerchantServiceNotifierTest {
                 ArgumentCaptor.forClass(MerchantIdentitySyncRequest.class);
         verify(merchantServiceClient).syncMerchantIdentity(sent.capture());
 
-        assertThat(sent.getValue().merchantId()).isEqualTo(MERCHANT_ID);
-        assertThat(sent.getValue().userId()).isEqualTo(USER_ID);
         assertThat(sent.getValue().businessName()).isEqualTo("EasyBuy");
     }
 

@@ -135,18 +135,18 @@ class DatabaseConstraintIntegrationTest {
     }
 
     @Test
-    @DisplayName("the CHECK constraint rejects a user_type outside the enum, even from raw SQL")
-    void checkConstraintRejectsUnknownUserType() {
+    @DisplayName("the CHECK constraint rejects a role outside the enum, even from raw SQL")
+    void checkConstraintRejectsUnknownRole() {
         assertThatThrownBy(() -> {
             entityManager.createNativeQuery("""
-                    INSERT INTO users (id, email, user_type, created_at, updated_at)
+                    INSERT INTO users (id, email, role, created_at, updated_at)
                     VALUES (:id, :email, 'ADMIN', now(), now())
                     """)
                     .setParameter("id", UUID.randomUUID())
                     .setParameter("email", UUID.randomUUID() + "@example.com")
                     .executeUpdate();
             entityManager.flush();
-        }).hasMessageContaining("ck_users_user_type");
+        }).hasMessageContaining("ck_users_role");
     }
 
     @Test

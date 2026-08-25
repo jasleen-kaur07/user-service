@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/internal/users")
 @Tag(name = "Internal - Users",
-     description = "Called by Auth Service only. Must not be exposed through the API Gateway.")
+        description = "Called by Auth Service only. Must not be exposed through the API Gateway.")
 public class InternalUserController {
 
     private final UserService userService;
@@ -44,8 +44,8 @@ public class InternalUserController {
                     | Situation | Result |
                     |---|---|
                     | New userId, unused email | `201 CREATED` |
-                    | Known userId, identical email and userType | `200 OK`, no write performed |
-                    | Known userId, different email or userType | `409 USER_IDENTITY_MISMATCH` |
+                    | Known userId, identical email and role | `200 OK`, no write performed |
+                    | Known userId, different email or role | `409 USER_IDENTITY_MISMATCH` |
                     | New userId, email owned by someone else | `409 EMAIL_ALREADY_IN_USE` |
 
                     The mismatch case is a conflict rather than an update on purpose: this endpoint
@@ -57,7 +57,7 @@ public class InternalUserController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Profile created"),
             @ApiResponse(responseCode = "200", description = "Profile already existed and is unchanged"),
-            @ApiResponse(responseCode = "400", description = "VALIDATION_ERROR - missing userId, bad email, or userType not CUSTOMER/MERCHANT",
+            @ApiResponse(responseCode = "400", description = "VALIDATION_ERROR - missing userId, bad email, or role not CUSTOMER/MERCHANT",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "409", description = "EMAIL_ALREADY_IN_USE or USER_IDENTITY_MISMATCH",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))

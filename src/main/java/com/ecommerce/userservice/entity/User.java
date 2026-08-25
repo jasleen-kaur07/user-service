@@ -35,8 +35,8 @@ public class User {
     private String phone;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_type", nullable = false, length = 20)
-    private UserType userType;
+    @Column(name = "role", nullable = false, length = 20)
+    private UserType role;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -49,14 +49,14 @@ public class User {
     protected User() {
     }
 
-    public User(UUID id, String email, UserType userType) {
+    public User(UUID id, String email, UserType role) {
         this.id = id;
         this.email = email;
-        this.userType = userType;
+        this.role = role;
     }
 
     public boolean isMerchant() {
-        return userType == UserType.MERCHANT;
+        return role == UserType.MERCHANT;
     }
 
     public UUID getId() {
@@ -95,8 +95,8 @@ public class User {
         this.phone = phone;
     }
 
-    public UserType getUserType() {
-        return userType;
+    public UserType getRole() {
+        return role;
     }
 
     public Instant getCreatedAt() {
@@ -125,6 +125,6 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{id=" + id + ", userType=" + userType + '}';
+        return "User{id=" + id + ", role=" + role + '}';
     }
 }

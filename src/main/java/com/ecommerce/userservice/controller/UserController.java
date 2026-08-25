@@ -110,7 +110,7 @@ public class UserController {
                     want to change; an omitted field is left untouched, and an empty string
                     clears it.
 
-                    userId, email and userType cannot be changed here.""")
+                    userId, email and role cannot be changed here.""")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Profile updated"),
             @ApiResponse(responseCode = "400", description = "VALIDATION_ERROR",

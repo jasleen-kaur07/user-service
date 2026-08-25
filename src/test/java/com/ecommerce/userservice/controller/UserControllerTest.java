@@ -67,7 +67,7 @@ class UserControllerTest {
                         .value(USER_ID.toString()))
                 .andExpect(jsonPath("$.email")
                         .value("jasleen@gmail.com"))
-                .andExpect(jsonPath("$.userType")
+                .andExpect(jsonPath("$.role")
                         .value("CUSTOMER"));
     }
 

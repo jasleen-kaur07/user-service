@@ -39,7 +39,7 @@ public class UserService {
         var existing = userRepository.findById(userId);
         if (existing.isPresent()) {
             User user = existing.get();
-            if (!Objects.equals(user.getEmail(), email) || user.getUserType() != request.userType()) {
+            if (!Objects.equals(user.getEmail(), email) || user.getRole() != request.role()) {
                 throw ConflictException.identityMismatch(userId);
             }
             log.debug("Identity sync for {} was a no-op; profile already exists", userId);
@@ -50,10 +50,10 @@ public class UserService {
             throw ConflictException.emailInUse(email);
         }
 
-        User user = new User(userId, email, request.userType());
+        User user = new User(userId, email, request.role());
         try {
             User saved = userRepository.saveAndFlush(user);
-            log.info("Created profile for user {} ({})", saved.getId(), saved.getUserType());
+            log.info("Created profile for user {} ({})", saved.getId(), saved.getRole());
             return new SyncResult(UserMapper.toResponse(saved), true);
         } catch (DataIntegrityViolationException ex) {
             log.debug("Concurrent identity sync for {}; re-reading the winner", userId);

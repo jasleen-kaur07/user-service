@@ -19,7 +19,7 @@ public record CreateUserRequest(
         @Size(max = 255, message = "email must not exceed 255 characters")
         String email,
 
-        @NotNull(message = "userType is required and must be CUSTOMER or MERCHANT")
-        UserType userType
+        @NotNull(message = "role is required and must be CUSTOMER or MERCHANT")
+        UserType role
 ) {
 }

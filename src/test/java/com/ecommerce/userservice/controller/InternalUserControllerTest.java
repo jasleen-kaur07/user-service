@@ -67,14 +67,14 @@ class InternalUserControllerTest {
                                         {
                                           "userId":"11111111-1111-1111-1111-111111111111",
                                           "email":"jasleen@gmail.com",
-                                          "userType":"CUSTOMER"
+                                          "role":"CUSTOMER"
                                         }
                                         """)
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id")
                         .value(USER_ID.toString()))
-                .andExpect(jsonPath("$.userType")
+                .andExpect(jsonPath("$.role")
                         .value("CUSTOMER"));
     }
 
@@ -97,7 +97,7 @@ class InternalUserControllerTest {
                                         {
                                           "userId":"11111111-1111-1111-1111-111111111111",
                                           "email":"jasleen@gmail.com",
-                                          "userType":"CUSTOMER"
+                                          "role":"CUSTOMER"
                                         }
                                         """)
                 )
@@ -123,12 +123,12 @@ class InternalUserControllerTest {
                                         {
                                           "userId":"11111111-1111-1111-1111-111111111111",
                                           "email":"easybuy@gmail.com",
-                                          "userType":"MERCHANT"
+                                          "role":"MERCHANT"
                                         }
                                         """)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userType")
+                .andExpect(jsonPath("$.role")
                         .value("MERCHANT"));
     }
 
@@ -148,7 +148,7 @@ class InternalUserControllerTest {
                                         {
                                           "userId":"33333333-3333-3333-3333-333333333333",
                                           "email":"jasleen@gmail.com",
-                                          "userType":"CUSTOMER"
+                                          "role":"CUSTOMER"
                                         }
                                         """)
                 )
@@ -168,7 +168,7 @@ class InternalUserControllerTest {
                                         {
                                           "userId":"11111111-1111-1111-1111-111111111111",
                                           "email":"not-an-email",
-                                          "userType":"CUSTOMER"
+                                          "role":"CUSTOMER"
                                         }
                                         """)
                 )
@@ -183,7 +183,7 @@ class InternalUserControllerTest {
     }
 
     @Test
-    @DisplayName("a userType outside the enum is 400 - the enum is the guard")
+    @DisplayName("a role outside the enum is 400 - the enum is the guard")
     void invalidUserType() throws Exception {
 
         mockMvc.perform(
@@ -193,7 +193,7 @@ class InternalUserControllerTest {
                                         {
                                           "userId":"11111111-1111-1111-1111-111111111111",
                                           "email":"jasleen@gmail.com",
-                                          "userType":"ADMIN"
+                                          "role":"ADMIN"
                                         }
                                         """)
                 )
@@ -213,7 +213,7 @@ class InternalUserControllerTest {
                         post("/api/internal/users")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
-                                        "{\"email\":\"jasleen@gmail.com\",\"userType\":\"CUSTOMER\"}"
+                                        "{\"email\":\"jasleen@gmail.com\",\"role\":\"CUSTOMER\"}"
                                 )
                 )
                 .andExpect(status().isBadRequest())
@@ -240,7 +240,7 @@ class InternalUserControllerTest {
                                         {
                                           "userId":"11111111-1111-1111-1111-111111111111",
                                           "email":"jasleen@gmail.com",
-                                          "userType":"CUSTOMER"
+                                          "role":"CUSTOMER"
                                         }
                                         """)
                 )

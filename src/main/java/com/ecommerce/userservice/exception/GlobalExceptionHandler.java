@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
         return build(
                 ErrorCode.BAD_REQUEST,
                 "Request body is malformed or contains an invalid value. "
-                        + "Check that userType is CUSTOMER or MERCHANT and that all ids are valid UUIDs.",
+                        + "Check that role is CUSTOMER or MERCHANT and that all ids are valid UUIDs.",
                 request
         );
     }
