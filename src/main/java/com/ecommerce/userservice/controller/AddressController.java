@@ -28,7 +28,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users/{userId}/addresses")
-@Tag(name = "Addresses", description = "Customer delivery addresses. Order Service reads these at checkout.")
+@Tag(
+        name = "Addresses",
+        description = "Customer delivery addresses. Order Service reads these at checkout."
+)
 public class AddressController {
 
     private final AddressService addressService;
@@ -45,38 +48,98 @@ public class AddressController {
 
                     Two rules apply. If `isDefault` is true, the user's previous default is demoted
                     in the same transaction. And a user's first address always becomes the
-                    default regardless of the flag, so checkout always has something to preselect.""")
+                    default regardless of the flag, so checkout always has something to preselect.
+                    """
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Address created; Location header points at it"),
-            @ApiResponse(responseCode = "400", description = "VALIDATION_ERROR - a required field is missing",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "404", description = "USER_NOT_FOUND",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Address created; Location header points at it"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "VALIDATION_ERROR - a required field is missing",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "USER_NOT_FOUND",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<AddressResponse> addAddress(
             @PathVariable UUID userId,
             @Valid @RequestBody AddressRequest request) {
 
-        AddressResponse created = addressService.addAddress(userId, request);
+        AddressResponse created =
+                addressService.addAddress(userId, request);
 
         return ResponseEntity
-                .created(URI.create("/api/users/" + userId + "/addresses/" + created.id()))
+                .created(
+                        URI.create(
+                                "/api/users/"
+                                        + userId
+                                        + "/addresses/"
+                                        + created.id()
+                        )
+                )
                 .body(created);
     }
 
     @GetMapping
     @Operation(
             summary = "List all of the user's addresses",
-            description = "Ordered with the default address first, then oldest first.")
+            description = "Ordered with the default address first, then oldest first."
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Addresses returned (possibly an empty list)"),
-            @ApiResponse(responseCode = "404", description = "USER_NOT_FOUND",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Addresses returned (possibly an empty list)"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "USER_NOT_FOUND",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<List<AddressResponse>> getAddresses(
             @PathVariable UUID userId) {
 
-        return ResponseEntity.ok(addressService.getAddresses(userId));
+        return ResponseEntity.ok(
+                addressService.getAddresses(userId)
+        );
+    }
+
+    @GetMapping("/default")
+    @Operation(
+            summary = "Get the user's default address",
+            description = "Returns the address currently marked as the user's default address."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Default address returned"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "DEFAULT_ADDRESS_NOT_FOUND or USER_NOT_FOUND",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
+    public ResponseEntity<AddressResponse> getDefaultAddress(
+            @PathVariable UUID userId) {
+
+        return ResponseEntity.ok(
+                addressService.getDefaultAddress(userId)
+        );
     }
 
     @GetMapping("/{addressId}")
@@ -85,17 +148,29 @@ public class AddressController {
             description = """
                     Order Service calls this at checkout for the selected delivery address, then
                     copies the values into its own database. The order keeps the address it
-                    actually shipped to, so a later edit here never rewrites delivery history.""")
+                    actually shipped to, so a later edit here never rewrites delivery history.
+                    """
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Address found"),
-            @ApiResponse(responseCode = "404", description = "ADDRESS_NOT_FOUND or USER_NOT_FOUND",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Address found"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "ADDRESS_NOT_FOUND or USER_NOT_FOUND",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<AddressResponse> getAddress(
             @PathVariable UUID userId,
             @PathVariable UUID addressId) {
 
-        return ResponseEntity.ok(addressService.getAddress(userId, addressId));
+        return ResponseEntity.ok(
+                addressService.getAddress(userId, addressId)
+        );
     }
 
     @PatchMapping("/{addressId}")
@@ -106,20 +181,41 @@ public class AddressController {
 
                     `isDefault` is not accepted here. Promoting an address is a separate endpoint
                     because it also demotes a sibling row, and that multi-row transaction should
-                    not hide inside what looks like a field edit.""")
+                    not hide inside what looks like a field edit.
+                    """
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Address updated"),
-            @ApiResponse(responseCode = "400", description = "VALIDATION_ERROR - empty body or bad pincode",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "404", description = "ADDRESS_NOT_FOUND or USER_NOT_FOUND",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Address updated"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "VALIDATION_ERROR - empty body or bad pincode",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "ADDRESS_NOT_FOUND or USER_NOT_FOUND",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<AddressResponse> updateAddress(
             @PathVariable UUID userId,
             @PathVariable UUID addressId,
             @Valid @RequestBody UpdateAddressRequest request) {
 
-        return ResponseEntity.ok(addressService.updateAddress(userId, addressId, request));
+        return ResponseEntity.ok(
+                addressService.updateAddress(
+                        userId,
+                        addressId,
+                        request
+                )
+        );
     }
 
     @PatchMapping("/{addressId}/default")
@@ -131,17 +227,32 @@ public class AddressController {
                     The invariant is also enforced in PostgreSQL by a partial unique index on
                     `addresses(user_id) WHERE is_default`.
 
-                    Idempotent: promoting the address that is already default returns 200.""")
+                    Idempotent: promoting the address that is already default returns 200.
+                    """
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Address is now the default"),
-            @ApiResponse(responseCode = "404", description = "ADDRESS_NOT_FOUND or USER_NOT_FOUND",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Address is now the default"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "ADDRESS_NOT_FOUND or USER_NOT_FOUND",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<AddressResponse> setDefaultAddress(
             @PathVariable UUID userId,
             @PathVariable UUID addressId) {
 
-        return ResponseEntity.ok(addressService.setDefaultAddress(userId, addressId));
+        return ResponseEntity.ok(
+                addressService.setDefaultAddress(
+                        userId,
+                        addressId
+                )
+        );
     }
 
     @DeleteMapping("/{addressId}")
@@ -152,17 +263,31 @@ public class AddressController {
                     oldest remaining address is promoted.
 
                     Orders already placed are unaffected: Order Service stored its own copy of the
-                    address at checkout.""")
+                    address at checkout.
+                    """
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Deleted"),
-            @ApiResponse(responseCode = "404", description = "ADDRESS_NOT_FOUND or USER_NOT_FOUND",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Deleted"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "ADDRESS_NOT_FOUND or USER_NOT_FOUND",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<Void> deleteAddress(
             @PathVariable UUID userId,
             @PathVariable UUID addressId) {
 
-        addressService.deleteAddress(userId, addressId);
+        addressService.deleteAddress(
+                userId,
+                addressId
+        );
+
         return ResponseEntity.noContent().build();
     }
 }

@@ -63,7 +63,6 @@ public class MerchantProfileService {
         return MerchantProfileMapper.toResponse(saved);
     }
 
-    /** Partial update of contact details. The merchantId and userId are immutable. */
     @Transactional
     public MerchantProfileResponse updateMerchantProfile(UUID userId, UpdateMerchantProfileRequest request) {
         MerchantProfile profile = merchantProfileRepository.findByUserId(userId)
